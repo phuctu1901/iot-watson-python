@@ -1,0 +1,20 @@
+    "identity": {
+        "orgId": "j4fntv",
+        "typeId": "Cambien"
+        "deviceId": "cambien001"
+    }.
+    "auth" {
+        "token": "12345678"
+    },
+    "options": {
+        "domain": "internetofthings.ibmcloud.com",
+        "logLevel": "error|warning|info|debug"
+    #     "mqtt": {
+    #         "port": 8883,
+    #         "transport": "tcp|websockets",
+    #         "cleanStart": True|False,
+    #         "sessionExpiry": 3600,
+    #         "keepAlive": 60,
+    #         "caFile": "/path/to/certificateAuthorityFile.pem"
+        }
+    }

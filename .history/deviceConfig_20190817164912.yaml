@@ -1,0 +1,10 @@
+identity:
+    orgId: j4fntv
+    typeId: Cambien
+    deviceId: cambien001
+auth:
+    token: 12345678
+options:
+    domain: internetofthings.ibmcloud.com
+    logLevel: debug
+    
