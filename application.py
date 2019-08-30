@@ -19,7 +19,7 @@ tableRowTemplate = "%-33s%-30s%s"
 
 
 def myEventCallback(event):
-    print("%-33s%-30s%s" % (event.timestamp.isoformat(), event.device, event.event + ": " + json.dumps(event.data)))
+    print("%-33s%-30s%s" % (event.timestamp.isoformat(), event.device, event.event + ": "))
 
 
 myConfig = { 
@@ -35,10 +35,14 @@ client = wiotp.sdk.application.ApplicationClient(config=myConfig)
 client.connect()
 
 def myEventCallback(event):
-    str = "%s event '%s' received from device [%s]: %s"
-    print(str % (event.format, event.eventId, event.device, json.dumps(event.data)))
+    str = "%s event '%s' received from device [%s]"
+    print(str % (event.format, event.eventId, event.device))
 
 client.deviceEventCallback = myEventCallback
+
+commandData={'publishEvent':1}
+client.publishCommand('Cambien', 'cambien001', "control_device", "json", commandData)
+
 client.subscribeToDeviceEvents()
 # client.deviceStatusCallback = myStatusCallback
 # print(client.subscribeToDeviceStatus().action)
