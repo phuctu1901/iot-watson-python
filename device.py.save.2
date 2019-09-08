@@ -29,30 +29,13 @@ isPublishEvent = 1
 
 def myCommandCallback(cmd):
     print("Command received: %s" % cmd.data)
-    print(cmd.data)
-    event = cmd.data.get("event")
-    value =int (cmd.data.get("value"))
-
-    if(event == "isPublishEvent" and value == 0):
+    global isPublishEvent
+    isPublishEvent = cmd.data.get("publishEvent")
+    if(isPublishEvent==0):
         print("Stop push info to server")
-        isPublishEvent = 0
-    elif(event == "isPublishEvent" and value ==1):
+    else:
         print("Continue push info to server")
-        isPublishEvent = 1
 
-
-    if(event == "button1"):
-        if (GPIO.input(12)):
-             GPIO.output(RELAIS_1_GPIO, GPIO.LOW) # off
-        else:
-             GPIO.output(RELAIS_1_GPIO, GPIO.HIGH) # on
-    if(event == "button2"):
-        if (GPIO.input(16)):
-             GPIO.output(RELAIS_2_GPIO, GPIO.LOW)
-        else:
-             GPIO.output(RELAIS_2_GPIO, GPIO.HIGH)
-
-	
 # Configure
 
 myConfig = { 
@@ -123,9 +106,11 @@ GPIO.add_event_detect(25,GPIO.RISING,callback=button_callback_relay2,  bouncetim
 while True:
     while isPublishEvent==1:
         result = instance.read()
+	count = 0
         while result.is_valid():
             print("Temperature: %-3.1f C" % result.temperature)
             print("Humidity: %-3.1f %%" % result.humidity)
+
             break
         current_time = datetime.datetime.now()
         env_sensor = {"temp": result.temperature, "hum": result.humidity}
@@ -141,6 +126,6 @@ while True:
         success1 = client.publishEvent("env_sensor", "json", env_sensor, qos=0, onPublish=myOnPublishCallback)
         if not success1:
             print("Not connected to IoTF")
-        time.sleep(30)
+        time.sleep(3)
 
 client.disconnect();

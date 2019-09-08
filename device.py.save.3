@@ -46,11 +46,11 @@ def myCommandCallback(cmd):
              GPIO.output(RELAIS_1_GPIO, GPIO.LOW) # off
         else:
              GPIO.output(RELAIS_1_GPIO, GPIO.HIGH) # on
-    if(event == "button2"):
-        if (GPIO.input(16)):
-             GPIO.output(RELAIS_2_GPIO, GPIO.LOW)
-        else:
-             GPIO.output(RELAIS_2_GPIO, GPIO.HIGH)
+
+    if (GPIO.input(12)):
+         GPIO.output(RELAIS_1_GPIO, GPIO.LOW) # off
+    else:
+        GPIO.output(RELAIS_1_GPIO, GPIO.HIGH) # on
 
 	
 # Configure
