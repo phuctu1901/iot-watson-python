@@ -73,26 +73,12 @@ client.connect()
 
 while True:
     while isPublishEvent==1:
-        result = instance.read()
         if result.is_valid():
             print("Temperature: %-3.1f C" % result.temperature)
-            print("Humidity: %-3.1f %%" % result.humidity)
-        else:
-            print("Error: %d" % result.error_code)
-        current_time = datetime.datetime.now()
-        env_sensor = {"temp": result.temperature, "hum": result.humidity}
-    # data = {"simpledev": "ok", "x": temp}
-
-        def myOnPublishCallback():
-            print("Confirmed event %s received by IoTF\n" % current_time)
-
-    # success = client.publishEvent("test", "json", data, qos=0, onPublish=myOnPublishCallback)
-    # if not success:
-    #     print("Not connected to IoTF")
-        
-        success1 = client.publishEvent("env_sensor", "json", env_sensor, qos=0, onPublish=myOnPublishCallback)
-        if not success1:
-            print("Not connected to IoTF")
-        time.sleep(3)
-
-client.disconnect();
+     print("Humidity: %-3.1f %%" % result.humidity)
+	else:
+    		print("Error: %d" % result.error_code)
+        temp = random.uniform(18,37)
+        cpu_percent= psutil.cpu_percent();
+        memory= dict(psutil.virtual_memory()._asdict())
+        battery = dict(psutil.sensors_battery()._asdict())
