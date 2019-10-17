@@ -126,21 +126,25 @@ while True:
         while result.is_valid():
             print("Temperature: %-3.1f C" % result.temperature)
             print("Humidity: %-3.1f %%" % result.humidity)
+            current_time = datetime.datetime.now()
+            env_sensor = {"temp": result.temperature, "hum": result.humidity}
+            def myOnPublishCallback():
+            	print("Confirmed event %s received by IoTF\n" % current_time)
+            success1 = client.publishEvent("env_sensor", "json", env_sensor, qos=0, onPublish=myOnPublishCallback)
+            if not success1:
+                print("Not connected to IoTF")
+            
             break
-        current_time = datetime.datetime.now()
-        env_sensor = {"temp": result.temperature, "hum": result.humidity}
+        
     # data = {"simpledev": "ok", "x": temp}
 
-        def myOnPublishCallback():
-            print("Confirmed event %s received by IoTF\n" % current_time)
+        
 
     # success = client.publishEvent("test", "json", data, qos=0, onPublish=myOnPublishCallback)
     # if not success:
     #     print("Not connected to IoTF")
         
-        success1 = client.publishEvent("env_sensor", "json", env_sensor, qos=0, onPublish=myOnPublishCallback)
-        if not success1:
-            print("Not connected to IoTF")
-        time.sleep(30)
+        
+        time.sleep(10)
 
 client.disconnect();
