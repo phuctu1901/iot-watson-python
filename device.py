@@ -51,6 +51,13 @@ def button_callback_relay1(channel):
     if not success1:
         print("Not connected to IoTF")
 
+def getLightState():
+    send_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+    light_data = {"relay1": GPIO.input(RELAIS_1_GPIO), "relay2": GPIO.input(RELAIS_2_GPIO),"time": send_time}
+    success1 = client.publishEvent("lightStatus", "json", light_data, qos=0, onPublish=myOnPublishCallback)
+    if not success1:
+        print("Not connected to IoTF")
+
 def configButton():
     GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
     GPIO.setup(25, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
@@ -92,22 +99,27 @@ def myCommandCallback(cmd):
     print("Command received: %s" % cmd.data)
     print(cmd.data)
     event = cmd.data.get("event")
-    value =int (cmd.data.get("value"))
-
-    if(event == "isPublishEvent" and value == 0):
-        print("Stop push info to server")
-        isPublishEvent = 0
-    elif(event == "isPublishEvent" and value ==1):
-        print("Continue push info to server")
-        isPublishEvent = 1
+#    value =int (cmd.data.get("value"))
+#
+#    if(event == "isPublishEvent" and value == 0):
+#        print("Stop push info to server")
+#        isPublishEvent = 0
+#    elif(event == "isPublishEvent" and value ==1):
+#        print("Continue push info to server")
+#        isPublishEvent = 1
 
 
     if(event == "button1"):
         button_callback_relay1(0)
     if(event == "button2"):
         button_callback_relay2(0)
-
-	
+        
+    if(event == "getLightState"):
+        getLightState()
+        
+def myOnPublishCallback():
+                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
+                print("Confirmed event %s received by IoTF\n" % current_time)
 # Configure
 
 myConfig = { 
@@ -145,9 +157,7 @@ while True:
             send_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
             print(send_time)
             dht11_data = {"temp": result.temperature, "hum": result.humidity, "time": send_time}
-            def myOnPublishCallback():
-                current_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-                print("Confirmed event %s received by IoTF\n" % current_time)
+            
             success1 = client.publishEvent("dht11Data", "json", dht11_data, qos=0, onPublish=myOnPublishCallback)
             if not success1:
                 print("Not connected to IoTF")
