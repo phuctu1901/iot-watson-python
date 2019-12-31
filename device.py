@@ -6,7 +6,49 @@ import time
 import json
 import dht11
 import RPi.GPIO as GPIO
+import logging
+import uuid
+import threading
 
+logging.basicConfig(filename='device.log',level=logging.DEBUG)
+
+import smbus
+import time
+
+# Define some constants from the datasheet
+
+#DEVICE     = 0x23 # Default device I2C address
+
+#POWER_DOWN = 0x00 # No active state
+#POWER_ON   = 0x01 # Power on
+#RESET      = 0x07 # Reset data register value
+
+# Start measurement at 4lx resolution. Time typically 16ms.
+#CONTINUOUS_LOW_RES_MODE = 0x13
+# Start measurement at 1lx resolution. Time typically 120ms
+#CONTINUOUS_HIGH_RES_MODE_1 = 0x10
+# Start measurement at 0.5lx resolution. Time typically 120ms
+#CONTINUOUS_HIGH_RES_MODE_2 = 0x11
+# Start measurement at 1lx resolution. Time typically 120ms
+# Device is automatically set to Power Down after measurement.
+#ONE_TIME_HIGH_RES_MODE_1 = 0x20
+# Start measurement at 0.5lx resolution. Time typically 120ms
+# Device is automatically set to Power Down after measurement.
+#ONE_TIME_HIGH_RES_MODE_2 = 0x21
+# Start measurement at 1lx resolution. Time typically 120ms
+# Device is automatically set to Power Down after measurement.
+#ONE_TIME_LOW_RES_MODE = 0x23
+
+#bus = smbus.SMBus(1)  # Rev 2 Pi uses 1
+
+#def convertToNumber(data):
+  # Simple function to convert 2 bytes of data
+  # into a decimal number
+#  return ((data[1] + (256 * data[0])) / 1.2)
+
+#def readLight(addr=DEVICE):
+ # data = bus.read_i2c_block_data(addr,ONE_TIME_HIGH_RES_MODE_1)
+ # return convertToNumber(data)
 
 # Khai báo các biến liên quan đến chân GPIO
 
@@ -50,6 +92,7 @@ def button_callback_relay1(channel):
     success1 = client.publishEvent("buttonSwitch", "json", button_data, qos=0, onPublish=myOnPublishCallback)
     if not success1:
         print("Not connected to IoTF")
+
 
 def getLightState():
     send_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
@@ -111,6 +154,7 @@ def myCommandCallback(cmd):
 
     if(event == "button1"):
         button_callback_relay1(0)
+        print(cmd.data)
     if(event == "button2"):
         button_callback_relay2(0)
         
@@ -124,12 +168,12 @@ def myOnPublishCallback():
 
 myConfig = { 
     "identity": {
-        "orgId": "j4fntv",
-        "typeId": "Cambien",
-        "deviceId": "cambien001"
+        "orgId": "ru269o",
+        "typeId": "RaspberryPiGateway",
+        "deviceId": "rasp_gateway_demo"
     },
     "auth": {
-        "token": "12345678"
+        "token": "wvo2RxmcVz0AZTrg!h"
     },
     "options": {
         "domain": "internetofthings.ibmcloud.com",
@@ -150,22 +194,29 @@ client.commandCallback = myCommandCallback
 client.connect()
 
 while True:
+#    attach ="Coongj hoa xa hoi chu nhgia viet nam, doc lap tu do hanh phuc"
     while isPublishEvent==1:
+        
         result = instance.read()
-        print(result)
-        while result.is_valid():
+#        print(result)
+#        while result.is_valid():
+        while True:
+            temps = psutil.sensors_temperatures()
             send_time = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-            print(send_time)
-            dht11_data = {"temp": result.temperature, "hum": result.humidity, "time": send_time}
+#            print(send_time)
+#            print("Light Level : " + str(readLight()))
+            id = str(uuid.uuid4())
+            logging.info(id+" ---- "+send_time)
+            dht11_data = {"id": id, "time": send_time,"hum": 10, "temp": temps.get('cpu-thermal')[0].current, "cpu_percent":psutil.cpu_percent(percpu=True)}
             
-            success1 = client.publishEvent("dht11Data", "json", dht11_data, qos=0, onPublish=myOnPublishCallback)
+            success1 = client.publishEvent("psutil_data", "json", dht11_data, qos=0, onPublish=myOnPublishCallback)
             if not success1:
                 print("Not connected to IoTF")
             break
-        time.sleep(10)
+        time.sleep(5)
 
 client.disconnect();
 
-def main():
-    print("hello world")
-main()
+# def main():
+#    print("hello world")
+# main()

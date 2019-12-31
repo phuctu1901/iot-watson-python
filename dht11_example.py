@@ -13,11 +13,12 @@ instance = dht11.DHT11(pin=23)
 try:
 	while True:
 	    result = instance.read()
-	    if result.is_valid():
-	        print("Last valid input: " + str(datetime.datetime.now()))
+	    print(result.is_valid());
+#	    if result.is_valid():
+	    print("Last valid input: " + str(datetime.datetime.now()))
 
-	        print("Temperature: %-3.1f C" % result.temperature)
-	        print("Humidity: %-3.1f %%" % result.humidity)
+#	        print("Temperature: %-3.1f C" % result.temperature)
+#	        print("Humidity: %-3.1f %%" % result.humidity)
 
 	    time.sleep(6)
 
